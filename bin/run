@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+$:.unshift(File.expand_path('../lib', __dir__))
+require_relative '../lib/course_hero_parser'
+
+require 'thor'
+require 'o14/autoload_o14'
+require 'autoload'
+
+class App < Thor
+  class_option :log_level, type: :string, default: 'DEBUG'
+  class_option :log_filename, type: :string, default: nil
+
+  TABLES_NAME = %w[edubirdie academic_help assignment_desk edusson essay_writer grades_fixer ivy_panda papers_owl study_corgi study_moose]
+
+  def initialize(*args)
+    super
+    initialize_logger
+  end
+
+  desc 'clear_tags', 'run clear tags'
+  def clear_tags
+    Parser::ClearTags.run
+  end
+
+  desc 'to_csv', 'from db to csv'
+  def to_csv
+    TABLES_NAME.each do |name|
+      csv_export = Parser::ToCSV.new(name)
+      csv_export.export_table
+    end
+  end
+
+  desc 'simple_parser', 'run simple driver'
+  option :first_page, type: :numeric, :required => false
+  def simple_parser
+    Parser::Example.run(options[:first_page])
+  end
+
+  desc 'edubirdie_parser', 'run parser'
+  def edubirdie_parser
+    Parser::EdubirdieParser.run
+  end
+
+  desc 'papers_owl_parser', 'run parser'
+  def papers_owl_parser
+    Parser::PapersOwlParser.run
+  end
+
+  desc 'ivy_panda_parser', 'run parser'
+  def ivy_panda_parser
+    Parser::IvyPandaParser.run
+  end
+
+  desc 'study_corgi_parser', 'run parser'
+  def study_corgi_parser
+    Parser::StudyCorgiParser.run
+  end
+
+  desc 'edusson_parser', 'run parser'
+  def edusson_parser
+    Parser::EdussonParser.run
+  end
+
+  desc 'study_moose_parser', 'run parser'
+  def study_moose_parser
+    Parser::StudyMoosseParser.run
+  end
+
+  desc 'assignment_desk_parser', 'run parser'
+  def assignment_desk_parser
+    Parser::AssignmentDeskParser.run
+  end
+
+  desc 'essay_writer_parser', 'run parser'
+  def essay_writer_parser
+    Parser::EssayWriterParser.run
+  end
+
+  desc 'academic_help_parser', 'run parser'
+  def academic_help_parser
+    Parser::AcademicHelpParser.run
+  end
+
+  desc 'grades_fixer_parser', 'run parser'
+  def grades_fixer_parser
+    Parser::GradesFixerParser.run
+  end
+
+  desc 'course_hero_parser' , 'run parser'
+  def course_hero_parser
+    Parser::CourseHeroParser.run
+  end
+
+  private
+
+  def initialize_logger
+    O14::ProjectLogger.get_logger options[:log_level], options[:log_filename]
+  end
+end
+
+App.start

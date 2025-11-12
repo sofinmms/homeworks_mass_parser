@@ -1,0 +1,6 @@
+*DS_Store
+config/*
+!config/config_sample.yml
+logs/*
+!logs/.gitkeep
+!tmp/*
